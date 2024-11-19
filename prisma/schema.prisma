@@ -1,0 +1,98 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  name          String
+  email         String    @unique
+  password      String    // Hashed password
+  role          String    @default("user") // "user", "provider", "admin"
+  image         String?   // Avatar URL
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  provider      Provider?
+  bookings      Booking[] @relation("UserBookings")
+  reviews       Review[]  @relation("UserReviews")
+}
+
+model Provider {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId        String    @unique @db.ObjectId
+  user          User      @relation(fields: [userId], references: [id])
+  businessName  String
+  description   String
+  location      String
+  categories    String[]  // Array of category IDs
+  services      Service[]
+  rating        Float     @default(0)
+  reviewCount   Int       @default(0)
+  availability  Boolean   @default(true)
+  bookings      Booking[] @relation("ProviderBookings")
+  reviews       Review[]  @relation("ProviderReviews")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Service {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  description String
+  price       Float
+  duration    Int       // Duration in minutes
+  providerId  String    @db.ObjectId
+  provider    Provider  @relation(fields: [providerId], references: [id])
+  categoryId  String    @db.ObjectId
+  category    Category  @relation(fields: [categoryId], references: [id])
+  bookings    Booking[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Category {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  name        String    @unique
+  description String
+  icon        String
+  color       String
+  services    Service[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Booking {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String    @db.ObjectId
+  user        User      @relation("UserBookings", fields: [userId], references: [id])
+  providerId  String    @db.ObjectId
+  provider    Provider  @relation("ProviderBookings", fields: [providerId], references: [id])
+  serviceId   String    @db.ObjectId
+  service     Service   @relation(fields: [serviceId], references: [id])
+  status      String    @default("pending") // pending, confirmed, completed, cancelled
+  date        DateTime
+  review      Review?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Review {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  rating      Int
+  comment     String?
+  userId      String    @db.ObjectId
+  user        User      @relation("UserReviews", fields: [userId], references: [id])
+  providerId  String    @db.ObjectId
+  provider    Provider  @relation("ProviderReviews", fields: [providerId], references: [id])
+  bookingId   String    @unique @db.ObjectId
+  booking     Booking   @relation(fields: [bookingId], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}

@@ -1,13 +1,13 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import { AuthProvider } from '@/context/auth-context'
 import './globals.css'
+import { Providers } from './providers'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Best Favour',
-  description: 'Find and offer services in your area',
+  title: 'BestFavour - Local Services Marketplace',
+  description: 'Find and hire local service providers for all your needs',
 }
 
 export default function RootLayout({
@@ -18,9 +18,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <AuthProvider>
+        <Providers>
           {children}
-        </AuthProvider>
+        </Providers>
       </body>
     </html>
   )

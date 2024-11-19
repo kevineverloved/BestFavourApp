@@ -1,8 +1,10 @@
 'use client'
 
+import { cn } from "@/lib/utils"
+import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Star, MapPin, Trending } from 'lucide-react'
+import { Star, MapPin, TrendingUp } from 'lucide-react'
 
 interface PopularServicesProps {
   className?: string
@@ -19,7 +21,10 @@ export function PopularServices({ className = '' }: PopularServicesProps) {
     <section className={className}>
       <div className="flex items-center mb-6">
         <h2 className="text-2xl font-bold">Popular Services</h2>
-        <Trending className="ml-2 h-6 w-6 text-blue-500" />
+        <Badge variant="secondary" className="flex items-center gap-1 ml-2">
+          <TrendingUp className="h-6 w-6" />
+          Trending
+        </Badge>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {popularServices.map((service) => (
